@@ -23,6 +23,97 @@ const getBalance = async (req, res) => {
   }
 };
 
+const getAgenciaBalance = async (req, res) => {
+  try {
+    const { agencia } = req.params;
+    const [balance] = await accountModel
+      .aggregate()
+      .match({ agencia: +agencia })
+      .group({ _id: null, media: { $avg: '$balance' } });
+
+    if (!balance) {
+      res.status(400).send('Documento não encontrado na coleção');
+    }
+
+    res.send(balance);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+const getMenorSaldo = async (req, res) => {
+  try {
+    const { qtd } = req.params;
+    const menorSaldo = await accountModel
+      .find({}, { _id: 0, agencia: 1, conta: 1, balance: 1 })
+      .sort({ balance: 1 })
+      .limit(+qtd);
+
+    if (!menorSaldo) {
+      res.status(400).send('Documento não encontrado na coleção');
+    }
+
+    res.send(menorSaldo);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+const getMaiorSaldo = async (req, res) => {
+  try {
+    const { qtd } = req.params;
+    const maiorSaldo = await accountModel
+      .find({}, { _id: 0, agencia: 1, conta: 1, balance: 1, name: 1 })
+      .sort({ balance: -1 })
+      .limit(+qtd)
+      .sort({ name: 1 });
+
+    if (!maiorSaldo) {
+      res.status(400).send('Documento não encontrado na coleção');
+    }
+
+    res.send(maiorSaldo);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+const privade99 = async (req, res) => {
+  try {
+    const agencias = await accountModel
+      .find({})
+      .sort({ balance: -1 })
+      .distinct('agencia');
+
+    if (!agencias) {
+      res.status(400).send('Você não tem nenhuma agencia cadastrada');
+    }
+
+    for (let i = 0; i < agencias.length; i++) {
+      const [account] = await accountModel
+        .find({ agencia: agencias[i] })
+        .sort({ balance: -1 })
+        .limit(1);
+
+      if (account.agencia !== 99) {
+        await accountModel.updateOne(account, { agencia: 99 });
+      }
+    }
+
+    const privade99List = await accountModel
+      .find({ agencia: 99 })
+      .sort({ balance: -1 });
+
+    if (!privade99List) {
+      res.status(400).send('Não há nenhuma conta private99');
+    }
+
+    res.send(privade99List);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
 const insert = async (req, res) => {
   try {
     const account = new accountModel(req.body);
@@ -132,4 +223,8 @@ export default {
   transfer,
   remove,
   removeCount,
+  getAgenciaBalance,
+  getMenorSaldo,
+  getMaiorSaldo,
+  privade99,
 };
