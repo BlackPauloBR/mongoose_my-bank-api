@@ -4,6 +4,7 @@
   "description": "CRUD ligado ao mongodb, que faz gerenciamento de contas bancarias, aplicação para fins educacionais, neste projeto foi usado: (express, mongodb Atlas, mongoose, fs NODE.js, linguagem JavaScript), atividade avaliativa bootcamp IGTI (Developer Full Stack)",
   "main": "app.js",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.9.20"
   },
