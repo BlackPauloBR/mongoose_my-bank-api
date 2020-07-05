@@ -9,7 +9,7 @@ import dotenv from 'dotenv';
 //ou você pode criar um arquivo .env clonado de sample-env
 //e acrescente suas credenciais.
 // e executar assim: PRD=false node app
-if (process.env.PRD !== true) dotenv.config();
+//if (process.env.PRD !== true) dotenv.config();
 import { accountRouter } from './src/routes/routerAccount.js';
 
 //Incialização BD...
