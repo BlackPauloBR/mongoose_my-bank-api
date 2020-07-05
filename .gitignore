@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+servidores_heroku.js
 
 # testing
 /coverage
